@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>DarkWolves Talks - Cipher Tool</title>
+<title>DarkWolves Talks</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -46,8 +46,10 @@
 
   .left-title {
     font-size: 1.5rem;
-    color: #00eaff;
-    text-shadow: 0 0 12px rgba(0, 234, 255, 0.8), 0 0 25px rgba(0, 234, 255, 0.6);
+    background: linear-gradient(90deg, #ff0033, #0044ff);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    text-shadow: 0 0 15px rgba(255, 0, 51, 0.8), 0 0 15px rgba(0, 68, 255, 0.8);
   }
 
   .right-title {
@@ -130,12 +132,13 @@
 
 <textarea id="output" placeholder="Output will appear here..." readonly></textarea>
 
+
 <script>
 const cipherMap = {
-  'A':'«','B':'√','C':'≤','D':'≥','E':'∝','F':'BaM','G':'∏','H':'∞','I':'`','J':'∴','K':'∵','L':'¢','M':'£','N':'™','O':'§','P':'¶','Q':'‖','R':'P','S':'≠','T':'∇','U':'∑','V':'≡','W':'YHK','X':'±','Y':'÷','Z':'×',
-  'a':'^«','b':'^√','c':'^≤','d':'^≥','e':'^∝','f':'^BaM','g':'^∏','h':'^∞','i':'^‱','j':'^∴','k':'^∵','l':'^¢','m':'^£','n':'^™','o':'^§','p':'^¶','q':'^‖','r':'^P','s':'^≠','t':'^∇','u':'^∑','v':'^≡','w':'^YHK','x':'^±','y':'^÷','z':'^×',
+  'A':'«','B':'√','C':'≤','D':'≥','E':'∝','F':'BaM','G':'∏','H':'∞','I':'ό','J':'∴','K':'∵','L':'¢','M':'£','N':'™','O':'§','P':'¶','Q':'‖','R':'P','S':'≠','T':'∇','U':'∑','V':'≡','W':'YHK','X':'±','Y':'÷','Z':'×',
+  'a':'^«','b':'^√','c':'^≤','d':'^≥','e':'^∝','f':'^BaM','g':'^∏','h':'^∞','i':'Ϊ','j':'^∴','k':'^∵','l':'^¢','m':'^£','n':'^™','o':'^§','p':'^¶','q':'^‖','r':'^P','s':'^≠','t':'^∇','u':'^∑','v':'^≡','w':'^YHK','x':'^±','y':'^÷','z':'^×',
   '0':')','1':'!','2':'@','3':'#','4':'$','5':'%','6':'?','7':'&','8':'*','9':'(',
-  ' ':'SsS','\t':'{}','.':'~','[':'X',']':'x'
+  ' ':'ʘ','\t':'{}','.':'~','[':'X',']':'x'
 };
 
 const reverseMap = Object.fromEntries(Object.entries(cipherMap).map(([k,v])=>[v,k]));
@@ -146,11 +149,11 @@ function encode() {
   for (let char of text) {
     encoded.push(cipherMap[char] !== undefined ? cipherMap[char] : char);
   }
-  document.getElementById("output").value = encoded.join('-');
+  document.getElementById("output").value = encoded.join('ζ');
 }
 
 function decode() {
-  const text = document.getElementById("input").value.split('-');
+  const text = document.getElementById("input").value.split('ζ');
   let decoded = '';
   for (let chunk of text) {
     decoded += reverseMap[chunk] !== undefined ? reverseMap[chunk] : chunk;
@@ -164,6 +167,5 @@ function copyText() {
   document.execCommand("copy");
 }
 </script>
-
 </body>
 </html>
