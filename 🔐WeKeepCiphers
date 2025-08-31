@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WeKeep — HTML (Affine + Caesar + Base64 + Atbash + ROT13)</title>
+<style>
+:root{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color-scheme:dark}
+body{margin:0;background:#071028;color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:18px}
+.app{width:100%;max-width:1100px;background:#0b1220;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.6);overflow:hidden}
+header{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:12px}
+header h1{margin:0;font-size:18px;color:#dffbf0}
+.tabs{display:flex;background:#071028;padding:8px 12px;gap:8px;overflow:auto}
+.tab{padding:8px 14px;border-radius:8px;background:transparent;color:#9fb0d6;cursor:pointer;white-space:nowrap}
+.tab.active{background:#064e3b;color:#e6fff5}
+.content{display:grid;grid-template-columns:1fr 320px;gap:18px;padding:18px}
+.card{background:#071129;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+textarea{width:100%;min-height:140px;background:#061225;border-radius:8px;border:1px solid #10233a;color:#dbeefe;padding:10px;font-family:monospace}
+.btn{background:#064e3b;color:#dffbf0;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;margin-top:10px}
+label.small{display:block;color:#9fb0d6;font-size:13px;margin-top:10px}
+.side{display:flex;flex-direction:column;gap:10px}
+input[type=text], input[type=number]{width:100%;padding:8px;border-radius:8px;border:1px solid #10233a;background:#061225;color:#dbeefe}
+.muted{color:#7b93b7;font-size:13px}
+.footer{padding:10px 18px;border-top:1px solid rgba(255,255,255,0.03);font-size:13px;color:#9fb0d6}
+.kbd{background:#061226;padding:6px 8px;border-radius:6px;font-family:monospace}
+.copyNote{font-size:12px;color:#9fb0d6;margin-top:8px}
+.lock{background:#02121a;padding:6px;border-radius:6px;color:#9fb0d6;font-size:13px;display:inline-block;margin-left:8px}
+</style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="WeKeep Affine build">
+    <header>
+      <h1>WeKeep — HTML (Affine)</h1>
+      <div class="muted">Affine (a=Z,b=f locked) · Caesar key = 8 locked · No persistence</div>
+    </header>
+
+    <div class="tabs" id="tabs" role="tablist" aria-label="Cipher tabs">
+      <div class="tab active" data-tab="caesar" role="tab">Caesar</div>
+      <div class="tab" data-tab="affine" role="tab">Affine</div>
+      <div class="tab" data-tab="base64" role="tab">Base64</div>
+      <div class="tab" data-tab="atbash" role="tab">Atbash</div>
+      <div class="tab" data-tab="rot13" role="tab">ROT13</div>
+    </div>
+
+    <div class="content">
+      <div class="panel">
+
+        <!-- CAESAR (locked key = 8) -->
+        <section class="card cipher" id="caesar" style="display:block" aria-labelledby="tab-caesar">
+          <label class="small">Caesar — Enter text</label>
+          <textarea id="caesarIn" placeholder="Type or paste..." aria-label="Caesar input"></textarea>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <div class="muted">Key</div>
+            <div class="kbd" style="margin-left:6px">8</div>
+            <div class="lock">locked</div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="caesarEnc">Encode</button>
+            <button class="btn" id="caesarDec">Decode</button>
+            <button class="btn" id="caesarCopy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="caesarOut" readonly aria-label="Caesar output"></textarea>
+          <div class="copyNote">Output becomes read-only after encoding. Reload page to clear.</div>
+        </section>
+
+        <!-- AFFINE (a=25 (Z) , b=5 (f) locked) -->
+        <section class="card cipher" id="affine" style="display:none" aria-labelledby="tab-affine">
+          <label class="small">Affine — Enter text</label>
+          <textarea id="affineIn" placeholder="Type or paste..." aria-label="Affine input"></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <div class="muted">Keys</div>
+            <div class="kbd">a = Z (25)</div>
+            <div class="kbd" style="margin-left:6px">b = f (5)</div>
+            <div class="lock">locked</div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="affineEnc">Encode</button>
+            <button class="btn" id="affineDec">Decode</button>
+            <button class="btn" id="affineCopy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="affineOut" readonly aria-label="Affine output"></textarea>
+          <div class="copyNote">Affine uses E(x) = (a·x + b) mod 26 with a=25 and b=5. Case preserved. Only message is copied.</div>
+        </section>
+
+        <!-- BASE64 -->
+        <section class="card cipher" id="base64" style="display:none" aria-labelledby="tab-base64">
+          <label class="small">Base64 — Enter text</label>
+          <textarea id="b64In" placeholder="Type or paste..." aria-label="Base64 input"></textarea>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="b64Enc">Encode</button>
+            <button class="btn" id="b64Dec">Decode</button>
+            <button class="btn" id="b64Copy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="b64Out" readonly aria-label="Base64 output"></textarea>
+        </section>
+
+        <!-- ATBASH -->
+        <section class="card cipher" id="atbash" style="display:none" aria-labelledby="tab-atbash">
+          <label class="small">Atbash — Enter text</label>
+          <textarea id="atbashIn" placeholder="Type or paste..." aria-label="Atbash input"></textarea>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="atbashEnc">Encode/Decode</button>
+            <button class="btn" id="atbashCopy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="atbashOut" readonly aria-label="Atbash output"></textarea>
+        </section>
+
+        <!-- ROT13 -->
+        <section class="card cipher" id="rot13" style="display:none" aria-labelledby="tab-rot13">
+          <label class="small">ROT13 — Enter text</label>
+          <textarea id="rotIn" placeholder="Type or paste..." aria-label="ROT13 input"></textarea>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="rot13Btn">Apply ROT13</button>
+            <button class="btn" id="rotCopy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="rotOut" readonly aria-label="ROT13 output"></textarea>
+        </section>
+
+      </div>
+
+      <aside class="side">
+        <div class="card">
+          <div class="muted">Info</div>
+          <div class="small">This page intentionally does not save keys. Only message text is copied. Reload to clear outputs and ephemeral state.</div>
+        </div>
+
+        <div class="card">
+          <div class="muted">How to use</div>
+          <div class="small">1) Choose a cipher tab. 2) Enter plaintext and press Encode. 3) Click Copy to copy only the message. Recipient must know the locked keys (outside this app) to decode.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">WeKeep — HTML Affine build</div>
+  </div>
+
+<script>
+// --- Tab switching ---
+const tabs = document.querySelectorAll('.tab');
+const ciphers = document.querySelectorAll('.cipher');
+tabs.forEach(t => t.addEventListener('click', ()=>{
+  tabs.forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const id = t.dataset.tab;
+  ciphers.forEach(c=>c.style.display = c.id === id ? 'block' : 'none');
+}));
+
+// --- Utilities ---
+function caesarShiftChar(c,k){
+  const code=c.charCodeAt(0);
+  if(code>=65&&code<=90) return String.fromCharCode(((code-65+k)%26+26)%26+65);
+  if(code>=97&&code<=122) return String.fromCharCode(((code-97+k)%26+26)%26+97);
+  if(code>=48&&code<=57) return String.fromCharCode(((code-48+k)%10+10)%10+48);
+  return c;
+}
+function caesarTransform(text,k){ return Array.from(text).map(ch=>caesarShiftChar(ch,k)).join(''); }
+function b64Encode(s){ try{ return btoa(unescape(encodeURIComponent(s))); }catch(e){ return 'Error'; } }
+function b64Decode(s){ try{ return decodeURIComponent(escape(atob(s))); }catch(e){ return 'Error'; } }
+function atbashTransform(text){
+  let out='';
+  for(const ch of text){
+    const code=ch.charCodeAt(0);
+    if(code>=65&&code<=90) out+=String.fromCharCode(65+(25-(code-65)));
+    else if(code>=97&&code<=122) out+=String.fromCharCode(97+(25-(code-97)));
+    else out+=ch;
+  }
+  return out;
+}
+function rot13(t){ return caesarTransform(t,13); }
+
+// --- Fixed keys ---
+const CAESAR_KEY = 8;
+const AFFINE_A = 25; // a = 25 (Z)
+const AFFINE_B = 5;  // b = 5 (f)
+// multiplicative inverse of 25 mod 26 is 25 (since 25 ≡ -1)
+const AFFINE_A_INV = 25;
+
+// --- Caesar handlers ---
+const caesarIn = document.getElementById('caesarIn'), caesarOut = document.getElementById('caesarOut');
+document.getElementById('caesarEnc').addEventListener('click', ()=>{ caesarOut.value = caesarTransform(caesarIn.value, CAESAR_KEY); caesarOut.readOnly = true; });
+document.getElementById('caesarDec').addEventListener('click', ()=>{ caesarOut.value = caesarTransform(caesarIn.value, -CAESAR_KEY); caesarOut.readOnly = true; });
+document.getElementById('caesarCopy').addEventListener('click', async ()=>{
+  const payload = caesarOut.value || '';
+  try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }
+  catch(e){ prompt('Copy this message:', payload); }
+});
+
+// --- Affine helpers ---
+function isUpper(code){ return code>=65 && code<=90; }
+function isLower(code){ return code>=97 && code<=122; }
+
+function affineEncode(text){
+  let out = '';
+  for(const ch of text){
+    const code = ch.charCodeAt(0);
+    if(isUpper(code)){
+      const x = code - 65;
+      const enc = (AFFINE_A * x + AFFINE_B) % 26;
+      out += String.fromCharCode(enc + 65);
+    } else if(isLower(code)){
+      const x = code - 97;
+      const enc = (AFFINE_A * x + AFFINE_B) % 26;
+      out += String.fromCharCode(enc + 97);
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
+function mod(a,m){ return ((a % m) + m) % m; }
+
+function affineDecode(text){
+  let out = '';
+  for(const ch of text){
+    const code = ch.charCodeAt(0);
+    if(isUpper(code)){
+      const y = code - 65;
+      const dec = mod(AFFINE_A_INV * (y - AFFINE_B), 26);
+      out += String.fromCharCode(dec + 65);
+    } else if(isLower(code)){
+      const y = code - 97;
+      const dec = mod(AFFINE_A_INV * (y - AFFINE_B), 26);
+      out += String.fromCharCode(dec + 97);
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
+// Affine handlers
+const affineIn = document.getElementById('affineIn'), affineOut = document.getElementById('affineOut');
+document.getElementById('affineEnc').addEventListener('click', ()=>{ affineOut.value = affineEncode(affineIn.value); affineOut.readOnly = true; });
+document.getElementById('affineDec').addEventListener('click', ()=>{ affineOut.value = affineDecode(affineIn.value); affineOut.readOnly = true; });
+document.getElementById('affineCopy').addEventListener('click', async ()=>{ const payload = affineOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
+
+// --- Base64 handlers ---
+const b64In = document.getElementById('b64In'), b64Out = document.getElementById('b64Out');
+document.getElementById('b64Enc').addEventListener('click', ()=>{ b64Out.value = b64Encode(b64In.value); b64Out.readOnly = true; });
+document.getElementById('b64Dec').addEventListener('click', ()=>{ b64Out.value = b64Decode(b64In.value); b64Out.readOnly = true; });
+document.getElementById('b64Copy').addEventListener('click', async ()=>{ const payload = b64Out.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
+
+// --- Atbash handlers ---
+const atIn = document.getElementById('atbashIn'), atOut = document.getElementById('atbashOut');
+document.getElementById('atbashEnc').addEventListener('click', ()=>{ atOut.value = atbashTransform(atIn.value); atOut.readOnly = true; });
+document.getElementById('atbashCopy').addEventListener('click', async ()=>{ const payload = atOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
+
+// --- ROT13 handlers ---
+const rIn = document.getElementById('rotIn'), rOut = document.getElementById('rotOut');
+document.getElementById('rot13Btn').addEventListener('click', ()=>{ rOut.value = rot13(rIn.value); rOut.readOnly = true; });
+document.getElementById('rotCopy').addEventListener('click', async ()=>{ const payload = rOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
+
+// --- On load: clear textareas and avoid persistence ---
+window.addEventListener('load', ()=>{ try{ localStorage.clear(); sessionStorage.clear(); }catch(e){}; document.querySelectorAll('textarea').forEach(t=>t.value=''); });
+
+</script>
+</body>
+</html>
