@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🔑🔒WeKeepCiphers</title>
+<title>🔐WeKeepCiphers</title>
 <style>
 :root{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color-scheme:dark}
 body{margin:0;background:#071028;color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:18px}
@@ -28,15 +28,15 @@ input[type=text], input[type=number]{width:100%;padding:8px;border-radius:8px;bo
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="WeKeep locked HTML">
+  <div class="app" role="application" aria-label="WeKeep Affine build">
     <header>
-      <h1>WeKeep — HTML (locked keys)</h1>
-      <div class="muted">Caesar key = 8 · Castle grid = 3×7 · No persistence</div>
+      <h1>WeKeep — HTML (Affine)</h1>
+      <div class="muted">Affine (a=Z,b=f locked) · Caesar key = 8 locked · No persistence</div>
     </header>
 
     <div class="tabs" id="tabs" role="tablist" aria-label="Cipher tabs">
       <div class="tab active" data-tab="caesar" role="tab">Caesar</div>
-      <div class="tab" data-tab="castle" role="tab">Castle</div>
+      <div class="tab" data-tab="affine" role="tab">Affine</div>
       <div class="tab" data-tab="base64" role="tab">Base64</div>
       <div class="tab" data-tab="atbash" role="tab">Atbash</div>
       <div class="tab" data-tab="rot13" role="tab">ROT13</div>
@@ -65,6 +65,29 @@ input[type=text], input[type=number]{width:100%;padding:8px;border-radius:8px;bo
           <label class="small">Output</label>
           <textarea id="caesarOut" readonly aria-label="Caesar output"></textarea>
           <div class="copyNote">Output becomes read-only after encoding. Reload page to clear.</div>
+        </section>
+
+        <!-- AFFINE (a=25 (Z) , b=5 (f) locked) -->
+        <section class="card cipher" id="affine" style="display:none" aria-labelledby="tab-affine">
+          <label class="small">Affine — Enter text</label>
+          <textarea id="affineIn" placeholder="Type or paste..." aria-label="Affine input"></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <div class="muted">Keys</div>
+            <div class="kbd">a = Z (25)</div>
+            <div class="kbd" style="margin-left:6px">b = f (5)</div>
+            <div class="lock">locked</div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="affineEnc">Encode</button>
+            <button class="btn" id="affineDec">Decode</button>
+            <button class="btn" id="affineCopy" style="margin-left:auto">Copy Message</button>
+          </div>
+
+          <label class="small">Output</label>
+          <textarea id="affineOut" readonly aria-label="Affine output"></textarea>
+          <div class="copyNote">Affine uses E(x) = (a·x + b) mod 26 with a=25 and b=5. Case preserved. Only message is copied.</div>
         </section>
 
         <!-- BASE64 -->
@@ -115,17 +138,17 @@ input[type=text], input[type=number]{width:100%;padding:8px;border-radius:8px;bo
       <aside class="side">
         <div class="card">
           <div class="muted">Info</div>
-          <div class="small">This page deliberately does not save keys. Only message text is copied. Reload to clear outputs and ephemeral state.</div>
+          <div class="small">This page intentionally does not save keys. Only message text is copied. Reload to clear outputs and ephemeral state.</div>
         </div>
 
         <div class="card">
           <div class="muted">How to use</div>
-          <div class="small">1) Choose a cipher tab. 2) Enter plaintext and press Encode. 3) Use Copy to copy only the message. 4) Recipient must know the locked key (outside this app) to decode.</div>
+          <div class="small">1) Choose a cipher tab. 2) Enter plaintext and press Encode. 3) Click Copy to copy only the message. Recipient must know the locked keys (outside this app) to decode.</div>
         </div>
       </aside>
     </div>
 
-    <div class="footer">WeKeep — HTML locked keys build</div>
+    <div class="footer">WeKeep — HTML Affine build</div>
   </div>
 
 <script>
@@ -164,8 +187,10 @@ function rot13(t){ return caesarTransform(t,13); }
 
 // --- Fixed keys ---
 const CAESAR_KEY = 8;
-const CASTLE_ROWS = 3;
-const CASTLE_COLS = 7;
+const AFFINE_A = 25; // a = 25 (Z)
+const AFFINE_B = 5;  // b = 5 (f)
+// multiplicative inverse of 25 mod 26 is 25 (since 25 ≡ -1)
+const AFFINE_A_INV = 25;
 
 // --- Caesar handlers ---
 const caesarIn = document.getElementById('caesarIn'), caesarOut = document.getElementById('caesarOut');
@@ -176,6 +201,56 @@ document.getElementById('caesarCopy').addEventListener('click', async ()=>{
   try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }
   catch(e){ prompt('Copy this message:', payload); }
 });
+
+// --- Affine helpers ---
+function isUpper(code){ return code>=65 && code<=90; }
+function isLower(code){ return code>=97 && code<=122; }
+
+function affineEncode(text){
+  let out = '';
+  for(const ch of text){
+    const code = ch.charCodeAt(0);
+    if(isUpper(code)){
+      const x = code - 65;
+      const enc = (AFFINE_A * x + AFFINE_B) % 26;
+      out += String.fromCharCode(enc + 65);
+    } else if(isLower(code)){
+      const x = code - 97;
+      const enc = (AFFINE_A * x + AFFINE_B) % 26;
+      out += String.fromCharCode(enc + 97);
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
+function mod(a,m){ return ((a % m) + m) % m; }
+
+function affineDecode(text){
+  let out = '';
+  for(const ch of text){
+    const code = ch.charCodeAt(0);
+    if(isUpper(code)){
+      const y = code - 65;
+      const dec = mod(AFFINE_A_INV * (y - AFFINE_B), 26);
+      out += String.fromCharCode(dec + 65);
+    } else if(isLower(code)){
+      const y = code - 97;
+      const dec = mod(AFFINE_A_INV * (y - AFFINE_B), 26);
+      out += String.fromCharCode(dec + 97);
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
+// Affine handlers
+const affineIn = document.getElementById('affineIn'), affineOut = document.getElementById('affineOut');
+document.getElementById('affineEnc').addEventListener('click', ()=>{ affineOut.value = affineEncode(affineIn.value); affineOut.readOnly = true; });
+document.getElementById('affineDec').addEventListener('click', ()=>{ affineOut.value = affineDecode(affineIn.value); affineOut.readOnly = true; });
+document.getElementById('affineCopy').addEventListener('click', async ()=>{ const payload = affineOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
 
 // --- Base64 handlers ---
 const b64In = document.getElementById('b64In'), b64Out = document.getElementById('b64Out');
@@ -193,7 +268,7 @@ const rIn = document.getElementById('rotIn'), rOut = document.getElementById('ro
 document.getElementById('rot13Btn').addEventListener('click', ()=>{ rOut.value = rot13(rIn.value); rOut.readOnly = true; });
 document.getElementById('rotCopy').addEventListener('click', async ()=>{ const payload = rOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
 
-// --- On load: clear any storage and textareas to avoid persistence ---
+// --- On load: clear textareas and avoid persistence ---
 window.addEventListener('load', ()=>{ try{ localStorage.clear(); sessionStorage.clear(); }catch(e){}; document.querySelectorAll('textarea').forEach(t=>t.value=''); });
 
 </script>
