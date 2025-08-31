@@ -177,63 +177,6 @@ document.getElementById('caesarCopy').addEventListener('click', async ()=>{
   catch(e){ prompt('Copy this message:', payload); }
 });
 
-// --- Castle grid helpers (I/J combined) ---
-function buildGrid(rows,cols){
-  const alpha = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'; // J removed, I/J combined
-  const grid = [];
-  let idx=0;
-  for(let i=0;i<rows*cols;i++){ grid.push(alpha[idx % alpha.length]); idx++; }
-  return grid;
-}
-function castleEncode(text, rows, cols){
-  const grid = buildGrid(rows,cols);
-  const map = Object.create(null);
-  for(let i=0;i<grid.length;i++) map[grid[i]] = i;
-  let out='';
-  for(const ch of text.toUpperCase()){
-    let c = ch;
-    if(c==='J') c='I';
-    if(c>='A'&&c<='Z'){
-      const pos = map[c];
-      if(typeof pos === 'number'){
-        const r = Math.floor(pos/cols)+1;
-        const co = (pos%cols)+1;
-        // two-digit pair (r and col) concatenated, with a separating space for tokens
-        out += String(r)+String(co) + ' ';
-      } else {
-        out += ch; // letter not in grid
-      }
-    } else {
-      out += ch; // keep spaces/punctuation as-is
-    }
-  }
-  return out.trim();
-}
-function castleDecode(code, rows, cols){
-  const grid = buildGrid(rows,cols);
-  const tokens = code.trim().split(/\s+/);
-  let out='';
-  for(const tk of tokens){
-    if(/^\d{2}$/.test(tk)){
-      const r = Number(tk[0]), c = Number(tk[1]);
-      if(r>=1 && r<=rows && c>=1 && c<=cols){
-        const idx = (r-1)*cols + (c-1);
-        out += grid[idx] || '?';
-      } else out += '?';
-    } else {
-      // if token isn't a 2-digit pair, append it (with a space)
-      out += tk + ' ';
-    }
-  }
-  return out.trim();
-}
-
-// Castle handlers (locked 3x7)
-const castleIn = document.getElementById('castleIn'), castleOut = document.getElementById('castleOut');
-document.getElementById('castleEnc').addEventListener('click', ()=>{ castleOut.value = castleEncode(castleIn.value, CASTLE_ROWS, CASTLE_COLS); castleOut.readOnly = true; });
-document.getElementById('castleDec').addEventListener('click', ()=>{ castleOut.value = castleDecode(castleIn.value, CASTLE_ROWS, CASTLE_COLS); castleOut.readOnly = true; });
-document.getElementById('castleCopy').addEventListener('click', async ()=>{ const payload = castleOut.value || ''; try{ await navigator.clipboard.writeText(payload); alert('Message copied'); }catch(e){ prompt('Copy this message:', payload);} });
-
 // --- Base64 handlers ---
 const b64In = document.getElementById('b64In'), b64Out = document.getElementById('b64Out');
 document.getElementById('b64Enc').addEventListener('click', ()=>{ b64Out.value = b64Encode(b64In.value); b64Out.readOnly = true; });
