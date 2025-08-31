@@ -171,15 +171,10 @@
   <h1>DarkWolves Talks</h1>
   <div class="right-title">Dark Muezin</div>
 </div>
-
 <textarea id="input" placeholder="Enter text here..."></textarea><br>
-<button onclick="encode()">Encode</button>
-<button onclick="decode()">Decode</button>
-<button onclick="copyText()">Copy Output</button>
-
-<textarea id="output" placeholder="Output will appear here..." readonly></textarea>
-
-  <div style="margin-top: 50px; padding: 25px; border: 2px solid rgba(0, 255, 230, 0.55); border-radius: 12px; background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 25px rgba(0, 255, 230, 0.2); text-align: left; font-size: 0.95rem; line-height: 1.6; color: #aefdfb; position: relative; z-index: 1;">
+ <button onclick="encode()">Encode</button> 
+<button onclick="decode()">Decode</button> <button onclick="copyText()">Copy Output</button> <textarea id="output" placeholder="Output will appear here..." readonly></textarea>
+<div style="margin-top: 50px; padding: 25px; border: 2px solid rgba(0, 255, 230, 0.55); border-radius: 12px; background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 25px rgba(0, 255, 230, 0.2); text-align: left; font-size: 0.95rem; line-height: 1.6; color: #aefdfb; position: relative; z-index: 1;">
   <h2 style="font-size: 1.4rem; color: #00ffe0; text-align: center; margin-bottom: 15px; text-shadow: 0 0 18px rgba(0, 255, 230, 0.6);">
     Usage Agreement & Legal Disclaimer
   </h2>
@@ -204,42 +199,7 @@
   <p>
     <strong>7. Acceptance of Terms:</strong> By using, purchasing, or distributing this cipher, you automatically agree to these terms. If you do not agree with any of these terms, you must refrain from using this tool.
   </p>
-</div>
-
-  <script>
-<script>
-const cipherMap = {
-  'A':'«','B':'√','C':'≤','D':'≥','E':'∝','F':'BaM','G':'∏','H':'∞','I':'ό','J':'∴','K':'∵','L':'¢','M':'£','N':'™','O':'§','P':'¶','Q':'‖','R':'P','S':'≠','T':'∇','U':'∑','V':'≡','W':'YHK','X':'±','Y':'÷','Z':'×',
-  'a':'^«','b':'^√','c':'^≤','d':'^≥','e':'^∝','f':'^BaM','g':'^∏','h':'^∞','i':'Ϊ','j':'^∴','k':'^∵','l':'^¢','m':'^£','n':'^™','o':'^§','p':'^¶','q':'^‖','r':'^P','s':'^≠','t':'^∇','u':'^∑','v':'^≡','w':'^YHK','x':'^±','y':'^÷','z':'^×',
-  '0':')','1':'!','2':'@','3':'#','4':'$','5':'%','6':'?','7':'&','8':'*','9':'(',
-  ' ':'ʘ','\t':'{}','.':'~','[':'X',']':'x'
-};
-
-const reverseMap = Object.fromEntries(Object.entries(cipherMap).map(([k,v])=>[v,k]));
-
-function encode() {
-  const text = document.getElementById("input").value;
-  let encoded = [];
-  for (let char of text) {
-    encoded.push(cipherMap[char] !== undefined ? cipherMap[char] : char);
-  }
-  document.getElementById("output").value = encoded.join('ζ');
-}
-
-function decode() {
-  const text = document.getElementById("input").value.split('ζ');
-  let decoded = '';
-  for (let chunk of text) {
-    decoded += reverseMap[chunk] !== undefined ? reverseMap[chunk] : chunk;
-  }
-  document.getElementById("output").value = decoded;
-}
-
-function copyText() {
-  const out = document.getElementById("output");
-  out.select();
-  document.execCommand("copy");
-}
+</div> <script> const cipherMap = { 'A':'«','B':'√','C':'≤','D':'≥','E':'∝','F':'BaM','G':'∏','H':'∞','I':'ό','J':'∴','K':'∵','L':'¢','M':'£','N':'™','O':'§','P':'¶','Q':'‖','R':'P','S':'≠','T':'∇','U':'∑','V':'≡','W':'YHK','X':'±','Y':'÷','Z':'×', 'a':'^«','b':'^√','c':'^≤','d':'^≥','e':'^∝','f':'^BaM','g':'^∏','h':'^∞','i':'Ϊ','j':'^∴','k':'^∵','l':'^¢','m':'^£','n':'^™','o':'^§','p':'^¶','q':'^‖','r':'^P','s':'^≠','t':'^∇','u':'^∑','v':'^≡','w':'^YHK','x':'^±','y':'^÷','z':'^×', '0':')','1':'!','2':'@','3':'#','4':'$','5':'%','6':'?','7':'&','8':'*','9':'(', ' ':'ʘ','\t':'{}','.':'~','[':'X',']':'x' }; const reverseMap = Object.fromEntries(Object.entries(cipherMap).map(([k,v])=>[v,k])); function encode() { const text = document.getElementById("input").value; let encoded = []; for (let char of text) { encoded.push(cipherMap[char] !== undefined ? cipherMap[char] : char); } document.getElementById("output").value = encoded.join('ζ'); } function decode() { const text = document.getElementById("input").value.split('ζ'); let decoded = ''; for (let chunk of text) { decoded += reverseMap[chunk] !== undefined ? reverseMap[chunk] : chunk; } document.getElementById("output").value = decoded; } function copyText() { const out = document.getElementById("output"); out.select(); document.execCommand("copy"); }
 </script>
 </body>
 </html>
