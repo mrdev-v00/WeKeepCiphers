@@ -67,28 +67,6 @@ input[type=text], input[type=number]{width:100%;padding:8px;border-radius:8px;bo
           <div class="copyNote">Output becomes read-only after encoding. Reload page to clear.</div>
         </section>
 
-        <!-- CASTLE (locked 3x7) -->
-        <section class="card cipher" id="castle" style="display:none" aria-labelledby="tab-castle">
-          <label class="small">Castle — Enter text</label>
-          <textarea id="castleIn" placeholder="Type or paste..." aria-label="Castle input"></textarea>
-
-          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
-            <div class="muted">Grid</div>
-            <div class="kbd">3 × 7</div>
-            <div class="lock">locked</div>
-          </div>
-
-          <div style="display:flex;gap:8px">
-            <button class="btn" id="castleEnc">Encode</button>
-            <button class="btn" id="castleDec">Decode</button>
-            <button class="btn" id="castleCopy" style="margin-left:auto">Copy Message</button>
-          </div>
-
-          <label class="small">Output</label>
-          <textarea id="castleOut" readonly aria-label="Castle output"></textarea>
-          <div class="copyNote">Grid fills A–Z (I/J combined) row-wise into 3×7 cells. Non-letters left unchanged when encoding.</div>
-        </section>
-
         <!-- BASE64 -->
         <section class="card cipher" id="base64" style="display:none" aria-labelledby="tab-base64">
           <label class="small">Base64 — Enter text</label>
