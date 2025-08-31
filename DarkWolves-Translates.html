@@ -77,8 +77,10 @@
 
 .left-title:hover, .right-title:hover {
   text-shadow: 
-    0 0 20px rgba(139, 0, 0, 1),    /* Dark Red Glow */
-    0 0 30px rgba(0, 0, 139, 1);    /* Dark Navy Glow */
+    background: linear-gradient(90deg, #8B0000, #00008B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255, 0, 51, 0.8), 0 0 15px rgba(0, 68, 255, 0.8);
   transform: scale(1.01);
 }
 
