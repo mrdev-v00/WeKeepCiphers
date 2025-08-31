@@ -65,25 +65,22 @@
     z-index: 1;
   }
 
-  .left-title {
-    font-size: 1.5rem;
-    background: linear-gradient(90deg, #ff0033, #0044ff);
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    text-shadow: 0 0 15px rgba(255, 0, 51, 0.8), 0 0 15px rgba(0, 68, 255, 0.8);
-      transition: text-shadow 0.3s ease, transform 0.3s ease;
+  .left-title, .right-title {
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #ff0033, #0044ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255, 0, 51, 0.8), 0 0 15px rgba(0, 68, 255, 0.8);
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
   cursor: pointer;
-  }
+}
 
-  .right-title {
-    font-size: 1.5rem;
-    background: linear-gradient(90deg, #ff0033, #0044ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 15px rgba(255, 0, 51, 0.8), 0 0 15px rgba(0, 68, 255, 0.8);
-      transition: text-shadow 0.3s ease, transform 0.3s ease;
-  cursor: pointer;
-  }
+.left-title:hover, .right-title:hover {
+  text-shadow: 
+    0 0 20px rgba(139, 0, 0, 1),    /* Dark Red Glow */
+    0 0 30px rgba(0, 0, 139, 1);    /* Dark Navy Glow */
+  transform: scale(1.1);
+}
 
   h1 {
     font-size: 2.8rem;
@@ -93,12 +90,6 @@
     z-index: 1;
   }
  
-.left-title:hover, .right-title:hover {
-  text-shadow: 
-    0 0 20px rgba(139, 0, 0, 1),    /* Dark Red Glow */
-    0 0 30px rgba(0, 0, 139, 1);    /* Dark Navy Glow */
-  transform: scale(1.1);
-}
   textarea {
     width: 80%;
     height: 120px;
